@@ -1,0 +1,12 @@
+{
+  "name": "Atendimento — Seção de Saúde 5º BE Cmb Bld",
+  "short_name": "Saúde 5BE",
+  "description": "Sistema de atendimento e agendamentos da Seção de Saúde.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e0f7fa",
+  "theme_color": "#0e7490",
+  "icons": []
+}
