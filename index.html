@@ -17,7 +17,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Seção de Saúde">
-<link rel="manifest" href="data:application/manifest+json,{"name":"AtendimentoSe%C3%A7%C3%A3o%20de%20Sa%C3%BAde","short_name":"Sa%C3%BAde%205BE","start_url":".","display":"standalone","background_color":"%23e0f7fa","theme_color":"%230e7490","lang":"pt-BR"}">
+<link rel="manifest" href="manifest.json">
 <style>
 :root{
   --verde:#0891b2; --verde2:#0e7490; --verde3:#e0f7fa;
@@ -1604,12 +1604,6 @@ footer,.module-note{color:#6d7b74}
 #fbLoginBtn:disabled{opacity:.65;cursor:wait}
 #fbLoginMsg{min-height:20px;margin-top:12px;color:#b91c1c;font-size:12px;font-weight:700;line-height:1.4}
 </style>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0b4f3a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Saúde 5º BE">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 </head>
 <body>
 <header>
@@ -4273,10 +4267,6 @@ function editarAtendimento(id){
   const a = lista.find(x => x.id === id);
   if(!a) return;
 
-  // Primeiro abre a aba. A navegação limpa o formulário ao retornar ao NOVO ATENDIMENTO.
-  // Depois preenche os dados do atendimento que será editado.
-  document.querySelector('[data-tab="novo"]').click();
-
   document.getElementById('cpf').value = a.cpf || '';
   document.getElementById('preccp').value = a.preccp || '';
   document.getElementById('nome').value = a.nome || '';
@@ -4286,6 +4276,8 @@ function editarAtendimento(id){
   document.getElementById('situacao').value = a.situacao || '';
   document.getElementById('procedimento').value = a.procedimento || '';
   document.getElementById('queixa').value = a.queixa || '';
+
+  document.querySelector('[data-tab="novo"]').click();
 
   const form = document.getElementById('formAtendimento');
   form.dataset.editingId = id;
@@ -7453,12 +7445,6 @@ function imprimirComprovanteAgendamento(tipo, ag){
 })();
 <\/script>
 
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
-}
-</script>
 </body></html>`);
   w.document.close();
 }
@@ -10073,8 +10059,6 @@ document.getElementById('prontBuscarBtn')?.addEventListener('click',prontBuscar)
     modal.setAttribute('aria-hidden','true');
   }
 
-  let abaAtivaAtual = document.querySelector('.tab-btn.active')?.dataset?.tab || 'gestao';
-
   function ativarAba(tab){
     const id=String(tab||'').trim();
     if(!id) return false;
@@ -10082,16 +10066,9 @@ document.getElementById('prontBuscarBtn')?.addEventListener('click',prontBuscar)
     const botoes=[...document.querySelectorAll('.tab-btn[data-tab]')];
     if(!painel) return false;
 
-    // Ao sair do NOVO ATENDIMENTO e voltar depois, o formulário começa limpo,
-    // pronto para um novo paciente. O primeiro acesso à aba também inicia limpo.
-    if(id==='novo' && abaAtivaAtual !== 'novo'){
-      executar(function(){ if(typeof limparFormAtendimento==='function') limparFormAtendimento(); });
-    }
-
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     botoes.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
     painel.classList.add('active');
-    abaAtivaAtual = id;
 
     if(id==='gestao') executar(function(){ if(typeof renderizarGestao==='function') renderizarGestao(); });
     if(id==='novo') executar(function(){ if(typeof renderizarPainelDia==='function') renderizarPainelDia(); });
@@ -10221,6 +10198,17 @@ window.alterarPerfilMenu = function(select){
   const rel = document.querySelector('[data-tab="relatorios"]');
   if(rel) rel.style.display = 'none';
 };
+</script>
+
+<script>
+// Inicialização PWA — só registra o Service Worker quando o sistema estiver publicado em HTTPS.
+if (window.isSecureContext && "serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function (err) {
+      console.warn("PWA: Service Worker não registrado:", err);
+    });
+  });
+}
 </script>
 </body>
 </html>
